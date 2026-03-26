@@ -1,7 +1,5 @@
 import { useState, useRef, useEffect } from "react";
 
-// ── Constants ────────────────────────────────────────────────────────────────
-
 const INITIAL_MESSAGES = [
   {
     id: 1,
@@ -11,8 +9,6 @@ const INITIAL_MESSAGES = [
     status: "delivered",
   },
 ];
-
-// ── Helpers ──────────────────────────────────────────────────────────────────
 
 function formatTime(date) {
   return date.toLocaleTimeString([], { hour: "2-digit", minute: "2-digit" });
@@ -25,12 +21,12 @@ function makeId() {
 function friendlyError(data) {
   const msg = data?.error ?? "";
   if (msg.includes("429") || msg.includes("quota") || msg.includes("Too Many Requests"))
-    return "⚠️ AI quota exceeded. Please wait a moment and try again, or check your Gemini API plan.";
+    return "AI quota exceeded. Please wait a moment and try again.";
   if (msg.includes("API_KEY_INVALID") || msg.includes("400"))
-    return "⚠️ Invalid API key. Please update your Gemini API key in the backend .env file.";
+    return "Invalid API key. Please update your Gemini API key in the backend .env file.";
   if (msg.includes("502") || msg.includes("Gemini"))
-    return "⚠️ AI service is temporarily unavailable. Please try again shortly.";
-  return "⚠️ Something went wrong. Please try again.";
+    return "AI service is temporarily unavailable. Please try again shortly.";
+  return "Something went wrong. Please try again.";
 }
 
 function formatAnswer(answer) {
@@ -52,8 +48,6 @@ function formatAnswer(answer) {
     .join("\n");
   return fields || "No data found for your query.";
 }
-
-// ── Main Component ───────────────────────────────────────────────────────────
 
 export default function ChatPanel({ onHighlight }) {
   const [messages, setMessages] = useState(INITIAL_MESSAGES);
@@ -91,9 +85,7 @@ export default function ChatPanel({ onHighlight }) {
         body:    JSON.stringify({ question: text }),
       });
       const data = await res.json();
-      const botText = res.ok
-        ? formatAnswer(data.answer)
-        : friendlyError(data);
+      const botText = res.ok ? formatAnswer(data.answer) : friendlyError(data);
 
       if (res.ok && Array.isArray(data.nodeIds)) {
         onHighlight(data.nodeIds.map(String));
@@ -127,13 +119,10 @@ export default function ChatPanel({ onHighlight }) {
 
   return (
     <div className="flex flex-col h-full bg-[#0f1117]">
-
-      {/* ── Header ── */}
       <Header />
 
-      {/* ── Message list ── */}
       <div
-        className="flex-1 overflow-y-auto px-5 py-5 space-y-1"
+        className="flex-1 overflow-y-auto px-3 sm:px-5 py-4 sm:py-5 space-y-1"
         style={{ scrollbarWidth: "thin", scrollbarColor: "#374151 transparent" }}
       >
         {messages.map((msg, i) => (
@@ -147,7 +136,6 @@ export default function ChatPanel({ onHighlight }) {
         <div ref={bottomRef} />
       </div>
 
-      {/* ── Input bar ── */}
       <InputBar
         input={input}
         setInput={setInput}
@@ -161,31 +149,27 @@ export default function ChatPanel({ onHighlight }) {
   );
 }
 
-// ── Header ───────────────────────────────────────────────────────────────────
-
 function Header() {
   return (
-    <div className="shrink-0 flex items-center gap-3 px-5 py-4 bg-[#0f1117] border-b border-gray-800/60">
-      {/* Avatar with pulse ring */}
+    <div className="shrink-0 flex items-center gap-2.5 sm:gap-3 px-3 sm:px-5 py-3 sm:py-4
+                    bg-[#0f1117] border-b border-gray-800/60">
       <div className="relative shrink-0">
-        <div className="w-9 h-9 rounded-full bg-gradient-to-br from-blue-500 to-violet-600
+        <div className="w-8 h-8 sm:w-9 sm:h-9 rounded-full bg-gradient-to-br from-blue-500 to-violet-600
                         flex items-center justify-center text-xs font-bold text-white shadow-lg">
           AI
         </div>
-        <span className="absolute -bottom-0.5 -right-0.5 w-3 h-3 rounded-full
+        <span className="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 sm:w-3 sm:h-3 rounded-full
                          bg-emerald-400 border-2 border-[#0f1117]" />
       </div>
 
-      {/* Name + status */}
       <div className="flex-1 min-w-0">
-        <p className="text-sm font-semibold text-white leading-tight">Graph Assistant</p>
-        <p className="text-[11px] text-emerald-400 mt-0.5 flex items-center gap-1">
+        <p className="text-xs sm:text-sm font-semibold text-white leading-tight">Graph Assistant</p>
+        <p className="text-[10px] sm:text-[11px] text-emerald-400 mt-0.5 flex items-center gap-1">
           <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 inline-block animate-pulse" />
           Online
         </p>
       </div>
 
-      {/* Message count badge */}
       <div className="shrink-0 px-2 py-0.5 rounded-full bg-gray-800 border border-gray-700">
         <span className="text-[10px] text-gray-400 font-medium">Graph AI</span>
       </div>
@@ -193,32 +177,27 @@ function Header() {
   );
 }
 
-// ── Message Bubble ────────────────────────────────────────────────────────────
-
 function MessageBubble({ message, isFirst }) {
   const isUser = message.role === "user";
 
   return (
-    <div className={`flex items-end gap-2.5
+    <div className={`flex items-end gap-2 sm:gap-2.5
       ${isUser ? "flex-row-reverse" : "flex-row"}
-      ${isFirst ? "mt-5" : "mt-1.5"}`}
+      ${isFirst ? "mt-4 sm:mt-5" : "mt-1 sm:mt-1.5"}`}
     >
-      {/* Bot avatar — only on first in group */}
-      <div className="w-7 shrink-0 self-end">
+      <div className="w-6 sm:w-7 shrink-0 self-end">
         {!isUser && isFirst && (
-          <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-violet-600
+          <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-gradient-to-br from-blue-500 to-violet-600
                           flex items-center justify-center text-[9px] font-bold text-white shadow">
             AI
           </div>
         )}
       </div>
 
-      {/* Bubble column */}
-      <div className={`flex flex-col gap-1.5 max-w-[80%] ${isUser ? "items-end" : "items-start"}`}>
-
-        {/* Bubble */}
-        <div className={`px-4 py-2.5 text-sm leading-relaxed break-words whitespace-pre-wrap
-          shadow-sm
+      <div className={`flex flex-col gap-1 sm:gap-1.5 max-w-[85%] sm:max-w-[80%]
+        ${isUser ? "items-end" : "items-start"}`}>
+        <div className={`px-3 sm:px-4 py-2 sm:py-2.5 text-xs sm:text-sm leading-relaxed
+          break-words whitespace-pre-wrap shadow-sm
           ${isUser
             ? "bg-blue-600 text-white rounded-2xl rounded-br-none"
             : message.status === "error"
@@ -229,10 +208,8 @@ function MessageBubble({ message, isFirst }) {
           {message.text}
         </div>
 
-        {/* Time + tick */}
-        <div className={`flex items-center gap-1.5 px-1
-          ${isUser ? "flex-row-reverse" : "flex-row"}`}
-        >
+        <div className={`flex items-center gap-1 sm:gap-1.5 px-1
+          ${isUser ? "flex-row-reverse" : "flex-row"}`}>
           <span className="text-[10px] text-gray-600">{message.time}</span>
           {isUser && <Tick status={message.status} />}
         </div>
@@ -240,8 +217,6 @@ function MessageBubble({ message, isFirst }) {
     </div>
   );
 }
-
-// ── Tick icons ────────────────────────────────────────────────────────────────
 
 function Tick({ status }) {
   if (status === "sent") {
@@ -263,17 +238,15 @@ function Tick({ status }) {
   return null;
 }
 
-// ── Typing Indicator ──────────────────────────────────────────────────────────
-
 function TypingIndicator() {
   return (
-    <div className="flex items-end gap-2.5 mt-5">
-      <div className="w-7 h-7 rounded-full bg-gradient-to-br from-blue-500 to-violet-600
+    <div className="flex items-end gap-2 sm:gap-2.5 mt-4 sm:mt-5">
+      <div className="w-6 h-6 sm:w-7 sm:h-7 rounded-full bg-gradient-to-br from-blue-500 to-violet-600
                       flex items-center justify-center text-[9px] font-bold text-white shrink-0">
         AI
       </div>
       <div className="bg-gray-800/90 border border-gray-700/40 rounded-2xl rounded-bl-none
-                      px-4 py-3 flex items-center gap-1.5 shadow-sm">
+                      px-3 sm:px-4 py-2.5 sm:py-3 flex items-center gap-1.5 shadow-sm">
         <span className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-bounce [animation-delay:0ms]" />
         <span className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-bounce [animation-delay:160ms]" />
         <span className="w-1.5 h-1.5 rounded-full bg-gray-400 animate-bounce [animation-delay:320ms]" />
@@ -282,17 +255,14 @@ function TypingIndicator() {
   );
 }
 
-// ── Input Bar ─────────────────────────────────────────────────────────────────
-
 function InputBar({ input, setInput, onSend, onKeyDown, canSend, textareaRef, isTyping }) {
   return (
-    <div className="shrink-0 bg-[#0f1117] border-t border-gray-800/60 px-4 pt-3 pb-4">
-
-      {/* Textarea + send */}
-      <div className={`flex items-end gap-2 rounded-2xl px-4 py-3
+    <div className="shrink-0 bg-[#0f1117] border-t border-gray-800/60 px-3 sm:px-4 pt-2.5 sm:pt-3 pb-3 sm:pb-4">
+      <div className={`flex items-end gap-2 rounded-2xl px-3 sm:px-4 py-2.5 sm:py-3
         bg-gray-800/70 border transition-all duration-200
-        ${input ? "border-blue-500/60 shadow-[0_0_0_3px_rgba(59,130,246,0.08)]"
-                : "border-gray-700/50"}`}
+        ${input
+          ? "border-blue-500/60 shadow-[0_0_0_3px_rgba(59,130,246,0.08)]"
+          : "border-gray-700/50"}`}
       >
         <textarea
           ref={textareaRef}
@@ -302,9 +272,8 @@ function InputBar({ input, setInput, onSend, onKeyDown, canSend, textareaRef, is
           onKeyDown={onKeyDown}
           placeholder="Ask about orders, invoices…"
           disabled={isTyping}
-          className="flex-1 bg-transparent text-sm text-gray-200 placeholder-gray-500
-                     resize-none outline-none leading-[1.5] overflow-y-auto
-                     disabled:opacity-50"
+          className="flex-1 bg-transparent text-xs sm:text-sm text-gray-200 placeholder-gray-500
+                     resize-none outline-none leading-[1.5] overflow-y-auto disabled:opacity-50"
           style={{ maxHeight: "120px" }}
         />
 
@@ -322,15 +291,12 @@ function InputBar({ input, setInput, onSend, onKeyDown, canSend, textareaRef, is
         </button>
       </div>
 
-      {/* Hint */}
-      <p className="text-[10px] text-gray-600 mt-2 text-center tracking-wide">
-        Enter &nbsp;to send &nbsp;·&nbsp; Shift+Enter &nbsp;for new line
+      <p className="text-[10px] text-gray-600 mt-1.5 sm:mt-2 text-center tracking-wide hidden sm:block">
+        Enter to send · Shift+Enter for new line
       </p>
     </div>
   );
 }
-
-// ── Send Icon ─────────────────────────────────────────────────────────────────
 
 function SendIcon({ active }) {
   return (
