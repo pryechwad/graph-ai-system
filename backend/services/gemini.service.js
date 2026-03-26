@@ -73,12 +73,36 @@ function geminiError(message) {
   return err;
 }
 
+// Keyword-based fallback when Gemini is unavailable
+function fallbackParse(question) {
+  const q = question.toLowerCase();
+  const idMatch = question.match(/[\w-]+\d+[\w-]*/i);
+  const id = idMatch?.[0];
+
+  if (q.includes("journal"))                          return { action: "find_journal_entry", entityId: id };
+  if ((q.includes("order") || q.includes("ord")) && id) return { action: "find_order",         entityId: id };
+  if ((q.includes("delivery") || q.includes("shipment")) && id) return { action: "find_delivery", entityId: id };
+  if ((q.includes("invoice") || q.includes("billing")) && id)  return { action: "find_invoice",  entityId: id };
+  if ((q.includes("payment") || q.includes("transaction")) && id) return { action: "find_payment", entityId: id };
+  if (q.includes("list") || q.includes("all")) {
+    if (q.includes("order"))    return { action: "list_orders" };
+    if (q.includes("delivery")) return { action: "list_deliveries" };
+    if (q.includes("invoice"))  return { action: "list_invoices" };
+    if (q.includes("payment"))  return { action: "list_payments" };
+  }
+  return { action: "out_of_scope" };
+}
+
 async function convertQuestionToQuery(question) {
   let result;
   try {
     const prompt = `${SYSTEM_PROMPT}\n\nQ: "${question}"\nA:`;
     result = await model.generateContent(prompt);
   } catch (err) {
+    const msg = err.message ?? "";
+    if (msg.includes("429") || msg.includes("quota") || msg.includes("Too Many Requests") || msg.includes("RESOURCE_EXHAUSTED")) {
+      return fallbackParse(question);
+    }
     throw geminiError(`Gemini API call failed: ${err.message}`);
   }
 
