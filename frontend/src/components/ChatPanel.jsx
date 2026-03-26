@@ -34,20 +34,23 @@ function friendlyError(data) {
 }
 
 function formatAnswer(answer) {
-  if (answer == null)             return "No answer returned.";
+  if (answer == null)             return "No data found for your query.";
   if (typeof answer === "string") return answer;
   if (Array.isArray(answer)) {
     if (answer.length === 0) return "No results found.";
     return answer.map((item, i) => {
       const fields = Object.entries(item)
+        .filter(([, v]) => v !== null && v !== undefined && v !== "")
         .map(([k, v]) => `  ${k}: ${v}`)
         .join("\n");
       return `${i + 1}.\n${fields}`;
     }).join("\n\n");
   }
-  return Object.entries(answer)
+  const fields = Object.entries(answer)
+    .filter(([, v]) => v !== null && v !== undefined && v !== "")
     .map(([k, v]) => `${k}: ${v}`)
     .join("\n");
+  return fields || "No data found for your query.";
 }
 
 // ── Main Component ───────────────────────────────────────────────────────────

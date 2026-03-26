@@ -33,7 +33,7 @@ function handleFind(action, entityId, graph) {
     return { answer: `Journal Entry (Accounting Document) for invoice ${entityId} is: ${accDoc}`, nodeIds: [node.id] };
   }
 
-  return { answer: node.data, nodeIds: [node.id] };
+  return { answer: node.data ?? node, nodeIds: [node.id] };
 }
 
 function executeQuery({ action, entityId }) {
