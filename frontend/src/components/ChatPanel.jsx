@@ -82,7 +82,7 @@ export default function ChatPanel({ onHighlight }) {
     setIsTyping(true);
 
     try {
-      const res  = await fetch("http://localhost:5000/query", {
+      const res  = await fetch(`${import.meta.env.VITE_API_URL ?? "http://localhost:5000"}/query`, {
         method:  "POST",
         headers: { "Content-Type": "application/json" },
         body:    JSON.stringify({ question: text }),

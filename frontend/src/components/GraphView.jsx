@@ -3,7 +3,7 @@ import { useEffect, useRef, useState, useCallback } from "react";
 // that crash with "AFRAME is not defined" in non-browser build environments
 import ForceGraph2D from "react-force-graph-2d";
 
-const API_URL = "http://localhost:5000/graph";
+const API_URL = `${import.meta.env.VITE_API_URL ?? "http://localhost:5000"}/graph`;
 
 // One color per entity type
 const NODE_COLORS = {
@@ -194,7 +194,7 @@ export default function GraphView({ highlightedIds = [] }) {
           <Overlay>
             <p className="text-red-400 text-sm font-medium">Failed to load graph</p>
             <p className="text-gray-500 text-xs mt-1">{errorMsg}</p>
-            <p className="text-gray-600 text-xs mt-1">Is the backend running on port 5000?</p>
+            <p className="text-gray-600 text-xs mt-1">Could not reach the backend server.</p>
           </Overlay>
         )}
 
