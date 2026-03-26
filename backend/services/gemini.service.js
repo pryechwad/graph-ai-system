@@ -50,8 +50,29 @@ A: { "action": "find_order", "entityId": "ORD-99" }
 Q: "Get delivery details for D-4821"
 A: { "action": "find_delivery", "entityId": "D-4821" }
 
+Q: "What is the status of order ORD-1001?"
+A: { "action": "find_order", "entityId": "ORD-1001" }
+
+Q: "Tell me about invoice INV-91150187"
+A: { "action": "find_invoice", "entityId": "INV-91150187" }
+
+Q: "Has payment PAY-4001 been completed?"
+A: { "action": "find_payment", "entityId": "PAY-4001" }
+
+Q: "Where is delivery DEL-2001?"
+A: { "action": "find_delivery", "entityId": "DEL-2001" }
+
 Q: "List all invoices"
 A: { "action": "list_invoices" }
+
+Q: "Show all orders"
+A: { "action": "list_orders" }
+
+Q: "How many payments are there?"
+A: { "action": "list_payments" }
+
+Q: "What deliveries do we have?"
+A: { "action": "list_deliveries" }
 
 Q: "What is the weather today?"
 A: { "action": "out_of_scope" }
