@@ -357,6 +357,4 @@ The CORS configuration in `server.js` also automatically allows all `*.vercel.ap
 
 ---
 
-## License
 
-MIT
